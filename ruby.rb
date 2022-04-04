@@ -101,21 +101,56 @@ class LinkedList
     puts "#{value} is not in this linked list."
   end
 
+  # add all node values to an array in parentheses, then join array with arrow
   def string
     collection = []
-    collection << @head.value
+    collection << "(#{@head.value})"
 
     current = @head
     until current.next_node.nil?
       current = current.next_node
-      collection << current.value
+      collection << "(#{current.value})"
     end
-    output = []
-    collection.each { |i| output << "(#{i})" }
-    output.join(' -> ')
+    collection.join(' -> ')
   end
 
+  # validate the insert index to prevent an error or recommend a more suitable method.
+  # if arguments pass validation, pass them onto insert method
+  def insert(value, index)
+    if @count <= 2 
+      puts 'Use new_head() or append instead().'
+    else
+      insert_node(value, index)
+    end
+  end
 
+  # Puts new node at index and points previous node to new node, and new node 
+  def insert_node(value, index)
+    new_node = Node.new(value)
+    preceding_node = get_node(index - 1)
+    successive_node = get_node(index)
+
+    preceding_node.next_node = new_node
+    new_node.next_node = successive_node
+    @count += 1
+  end
+
+  # account for edge cases where the index is the first or last node
+  # otherwise get the preceding node (index-1) and sets its next_node to the successive node (index+1)
+  def remove(index)
+    if index == 0
+      new_head = @head.next_node
+      @head.next_node = nil
+      @head = new_head
+    elsif index == @count - 1
+      return puts 'Use pop() instead.'
+    else
+      preceding_node = get_node(index - 1)
+      successive_node = get_node(index + 1)
+      preceding_node.next_node = successive_node
+    end
+    @count -= 1
+  end
 end
 
 # creates new nodes that contain a value and link to another node
@@ -143,13 +178,25 @@ list.tail_node
 list.size
 
 puts list.get_node(5).value
-list.size
-list.tail_node
+
 list.pop
-list.size
-list.tail_node
+puts list.size
+puts list.tail_node
+
 puts list.contain('third')
+puts list.contain('wibblybottom')
 puts list.find('first')
 puts list.find('wibblybottom')
+puts list.string
 
-print list.string
+list.insert('intruder', 5)
+puts list.string
+list.size
+
+list.remove(3)
+puts list.string
+list.size
+
+list.new_head('zeroth')
+puts list.string
+list.size
